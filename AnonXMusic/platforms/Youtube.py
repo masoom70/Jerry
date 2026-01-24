@@ -2,18 +2,24 @@ import asyncio
 import os
 import re
 import json
-import random
-import aiohttp
 from typing import Union
-
+import requests
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch
+from youtubesearchpython.__future__ import VideosSearch
+from RadhaMusic.utils.database import is_on_off
+from RadhaMusic.utils.formatters import time_to_seconds
+import os
+import glob
+import random
+import logging
+import aiohttp
+import config
 
-from config import API_URL, VIDEO_API_URL, API_KEY
-from AnonXMusic.utils.database import is_on_off
-from AnonXMusic.utils.formatters import time_to_seconds
+API_URL = "http://2.56.96.225:6900"
+VIDEO_API_URL = "https://api.video.thequickearn.xyz"
+API_KEY = "180DxNexGenBotsl8EE37"
 
 
 def cookie_txt_file():
@@ -37,7 +43,7 @@ async def download_song(link: str):
             #print(f"File already exists: {file_path}")
             return file_path
         
-    song_url = f"{API_URL}/song/{video_id}?api={API_KEY}"
+    song_url = f"{API_URL}/audio?song={video_id}"
     async with aiohttp.ClientSession() as session:
         for attempt in range(10):
             try:
@@ -224,30 +230,32 @@ class YouTubeAPI:
             return False
 
     async def url(self, message_1: Message) -> Union[str, None]:
-        link = None
         messages = [message_1]
-        entities = [MessageEntityType.URL, MessageEntityType.TEXT_LINK]
-
         if message_1.reply_to_message:
             messages.append(message_1.reply_to_message)
-
+        text = ""
+        offset = None
+        length = None
         for message in messages:
+            if offset:
+                break
             if message.entities:
                 for entity in message.entities:
-                    if entity.type in entities:
-                        link = entity.url
+                    if entity.type == MessageEntityType.URL:
+                        text = message.text or message.caption
+                        offset, length = entity.offset, entity.length
                         break
-
-            if message.caption_entities:
+            elif message.caption_entities:
                 for entity in message.caption_entities:
-                    if entity.type in entities:
-                        link = entity.url
-                        break
-
-        if link:
-            return link.split("&si")[0].split("?si")[0]
-        return None
-
+                    if entity.type == MessageEntityType.TEXT_LINK:
+                        return entity.url
+        if offset in (None,):
+            return None
+        umm = text[offset : offset + length]
+        if "?si=" in umm:
+            umm = umm.split("?si=")[0].split("&si=")[0]
+        return umm
+        
     async def details(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
             link = self.base + link
@@ -554,13 +562,13 @@ class YouTubeAPI:
                     return downloaded_file, direct
             except Exception as e:
                 print(f"Video API failed: {e}")
-
+            
             # Fallback to cookies
             cookie_file = cookie_txt_file()
             if not cookie_file:
                 print("No cookies found. Cannot download video.")
                 return None, None
-
+                
             if await is_on_off(1):
                 direct = True
                 downloaded_file = await download_song(link)
