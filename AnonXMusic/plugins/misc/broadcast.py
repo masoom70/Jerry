@@ -1,6 +1,6 @@
 import asyncio
 
-from pyrogram import filters
+from pyrogram import filters, types
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait
 
@@ -52,11 +52,18 @@ async def braodcast_message(client, message, _):
                     if content_type == 'photo':
                         await app.send_photo(chat_id=i, photo=file_id, caption=caption, reply_markup=reply_markup)
                     else:
-                        await app.send_message(chat_id=i, text=text_content, reply_markup=reply_markup)
+                        await app.send_message(
+                            chat_id=i,
+                            text=text_content,
+                            reply_markup=reply_markup,
+                            link_preview_options=types.LinkPreviewOptions(
+                                is_disabled=False,
+                            )
+                        )
                     sent_chats += 1
                     await asyncio.sleep(0.2)
                 except FloodWait as fw:
-                    await asyncio.sleep(fw.x)
+                    await asyncio.sleep(fw.value)
                 except:
                     continue
             await message.reply_text(f"Broadcast to chats completed! Sent to {sent_chats} chats.")
@@ -70,11 +77,18 @@ async def braodcast_message(client, message, _):
                     if content_type == 'photo':
                         await app.send_photo(chat_id=i, photo=file_id, caption=caption, reply_markup=reply_markup)
                     else:
-                        await app.send_message(chat_id=i, text=text_content, reply_markup=reply_markup)
+                        await app.send_message(
+                            chat_id=i,
+                            text=text_content,
+                            reply_markup=reply_markup,
+                            link_preview_options=types.LinkPreviewOptions(
+                                is_disabled=False,
+                            )
+                        )
                     sent_users += 1
                     await asyncio.sleep(0.2)
                 except FloodWait as fw:
-                    await asyncio.sleep(fw.x)
+                    await asyncio.sleep(fw.value)
                 except:
                     continue
             await message.reply_text(f"Broadcast to users completed! Sent to {sent_users} users.")
@@ -86,7 +100,7 @@ async def braodcast_message(client, message, _):
     if message.reply_to_message:
         x = message.reply_to_message.id
         y = message.chat.id
-        reply_markup = message.reply_to_message.reply_markup if message.reply_to_message.reply_markup else None
+        reply_markup = message.reply_to_message.reply_markup or None
         content = None
     else:
         if len(message.command) < 2:
@@ -120,7 +134,7 @@ async def braodcast_message(client, message, _):
                 m = (
                     await app.copy_message(chat_id=i, from_chat_id=y, message_id=x, reply_markup=reply_markup)
                     if message.reply_to_message
-                    else await app.send_message(i, text=query)
+                    else await app.send_message(chat_id=i, text=query, link_preview_options=types.LinkPreviewOptions(is_disabled=False))
                 )
                 if "-pin" in message.text:
                     try:
@@ -157,9 +171,20 @@ async def braodcast_message(client, message, _):
         for i in served_users:
             try:
                 m = (
-                    await app.copy_message(chat_id=i, from_chat_id=y, message_id=x, reply_markup=reply_markup)
+                    await app.copy_message(
+                        chat_id=i,
+                        from_chat_id=y,
+                        message_id=x,
+                        reply_markup=reply_markup,
+                    )
                     if message.reply_to_message
-                    else await app.send_message(i, text=query)
+                    else await app.send_message(
+                        chat_id=i,
+                        text=query,
+                        link_preview_options=types.LinkPreviewOptions(
+                            is_disabled=False,
+                        )
+                    )
                 )
                 susr += 1
                 await asyncio.sleep(0.2)
@@ -178,7 +203,7 @@ async def braodcast_message(client, message, _):
     if "-assistant" in message.text:
         aw = await message.reply_text(_["broad_5"])
         text = _["broad_6"]
-        from AnonXMusic.core.userbot import assistants
+        from AviaxMusic.core.userbot import assistants
 
         for num in assistants:
             sent = 0
