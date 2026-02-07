@@ -5,7 +5,7 @@ asyncio
 beautifulsoup4
 gitpython
 heroku3
-pyrofork
+kurigram
 pillow
 psutil
 pymongo
