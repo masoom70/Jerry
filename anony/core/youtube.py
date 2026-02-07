@@ -13,7 +13,8 @@ from pathlib import Path
 
 from py_yt import Playlist, VideosSearch
 
-from anony import logger
+from ._api import FallenApi
+from anony import config, logger
 from anony.helpers import Track, utils
 
 
@@ -23,6 +24,7 @@ class YouTube:
         self.cookies = []
         self.checked = False
         self.cookie_dir = "anony/cookies"
+        self.fallen = FallenApi()
         self.warned = False
         self.regex = re.compile(
             r"(https?://)?(www\.|m\.|music\.)?"
@@ -101,6 +103,10 @@ class YouTube:
 
     async def download(self, video_id: str, video: bool = False) -> str | None:
         url = self.base + video_id
+        if not video and config.API_KEY and config.API_URL:
+            if file_path := await self.fallen.download_track(url):
+                return file_path
+
         ext = "mp4" if video else "webm"
         filename = f"downloads/{video_id}.{ext}"
 
