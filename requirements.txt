@@ -5,7 +5,8 @@ asyncio
 beautifulsoup4
 gitpython
 heroku3
-kurigram
+pykeyboard
+pyrofork
 pillow
 psutil
 pymongo
@@ -17,5 +18,4 @@ py-yt-search
 requests
 speedtest-cli
 spotipy
-pytgcrypto
 yt-dlp
