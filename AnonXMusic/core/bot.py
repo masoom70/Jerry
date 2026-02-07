@@ -17,7 +17,7 @@ class Anony(Client):
             in_memory=True,
             parse_mode=ParseMode.HTML,
             max_concurrent_transmissions=7,
-            disable_web_page_preview=True,
+            link_preview_options=types.LinkPreviewOptions(is_disabled=True),
         )
 
     async def _start(self):
