@@ -121,10 +121,9 @@ class FallenApi:
         dl_url = track.cdnurl
         tg_match = re.match(r"https?://t\.me/([^/]+)/(\d+)", dl_url)
         if tg_match:
-            chat, msg_id = tg_match.groups()
             try:
-                msg = await app.get_messages(chat_id=chat, message_ids=int(msg_id))
-                file_path = await msg.download(file_name=self.download_dir)
+                msg = await app.get_messages(message_ids=dl_url)
+                file_path = await msg.download()
                 return file_path
             except errors.FloodWait as e:
                 logger.warning(f"[FLOODWAIT] Sleeping {e.value}s before retry.")
