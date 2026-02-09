@@ -25,7 +25,7 @@ async def _broadcast(_, message: types.Message):
 
     msg = message.reply_to_message
     count, ucount = 0, 0
-    chats, groups, users = [], [], []
+    groups, users = [], []
     sent = await message.reply_text(message.lang["gcast_start"])
 
     if "-nochat" not in message.command:
@@ -33,7 +33,6 @@ async def _broadcast(_, message: types.Message):
     if "-user" in message.command:
         users.extend(await db.get_users())
 
-    chats.extend(groups + users)
     broadcasting = True
 
     await msg.forward(app.logger)
@@ -48,7 +47,7 @@ async def _broadcast(_, message: types.Message):
     await asyncio.sleep(5)
 
     failed = ""
-    for chat in chats:
+    for chat in groups:
         if not broadcasting:
             await sent.edit_text(message.lang["gcast_stopped"].format(count, ucount))
             break
@@ -59,13 +58,30 @@ async def _broadcast(_, message: types.Message):
                 if "-copy" in message.text
                 else await msg.forward(chat)
             )
-            if chat in groups:
-                count += 1
-            else:
-                ucount += 1
+            count += 1
             await asyncio.sleep(0.1)
         except errors.FloodWait as fw:
-            await asyncio.sleep(fw.value + 30)
+            await asyncio.sleep(fw.value + 60)
+        except Exception as ex:
+            failed += f"{chat} - {ex}\n"
+            continue
+    await message.reply_text(f"Broadcated to {count} chats.")
+
+    for chat in users:
+        if not broadcasting:
+            await sent.edit_text(message.lang["gcast_stopped"].format(count, ucount))
+            break
+
+        try:
+            (
+                await msg.copy(chat, reply_markup=msg.reply_markup)
+                if "-copy" in message.text
+                else await msg.forward(chat)
+            )
+            ucount += 1
+            await asyncio.sleep(0.1)
+        except errors.FloodWait as fw:
+            await asyncio.sleep(fw.value + 60)
         except Exception as ex:
             failed += f"{chat} - {ex}\n"
             continue
@@ -80,7 +96,9 @@ async def _broadcast(_, message: types.Message):
         )
         os.remove("errors.txt")
     broadcasting = False
-    await sent.edit_text(text)
+    try: await sent.delete()
+    except: pass
+    await message.reply_text(text)
 
 
 @app.on_message(filters.command(["stop_gcast", "stop_broadcast"]) & app.sudoers)
