@@ -2,7 +2,7 @@ import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import InviteRequestSent
-from anony import app, db, userbot
+from anony import app, userbot
 from anony.misc import SUDOERS
 from anony.utils.database import get_assistant, is_active_chat, get_client
 from anony.core.userbot import assistants
