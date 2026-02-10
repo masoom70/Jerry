@@ -16,7 +16,7 @@ class FallenApi:
         self.download_dir = "downloads"
 
     def get_session(self) -> aiohttp.ClientSession:
-        if self.session.closed:
+        if not self.session or self.session.closed:
             self.session = aiohttp.ClientSession()
         return self.session
 
