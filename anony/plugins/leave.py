@@ -1,11 +1,12 @@
+# Copyright (c) 2025 AnonymousX1025
+# Licensed under the MIT License.
+# This file is part of AnonXMusic
+
+
 import asyncio
-from pyrogram import filters
-from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import InviteRequestSent
-from anony import app, userbot
-from anony.utils.database import get_assistant, is_active_chat, get_client
-from anony.core.userbot import assistants
-from config import LOGGER_ID as JAI
+from pyrogram import enums, filters, types
+
+from anony import app, db, userbot
 
 
 @app.on_message(filters.command(["leaveall1", f"leaveall1@{app.username}"]) & SUDOERS)
