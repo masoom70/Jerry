@@ -40,7 +40,7 @@ class FallenApi:
         if video:
             song_url = f"{self.vapi_url}/video/{video_id}?api={self.api_key}" 
         else:
-            song_url = f"{self.api_key}/audio?song={video_id}"
+            song_url = f"{self.api_url}/audio?song={video_id}"
         dl_url = None
         file_ext = "mp4" if video else "mp3"
 
