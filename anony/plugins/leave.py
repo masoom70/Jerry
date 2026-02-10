@@ -9,170 +9,39 @@ from pyrogram import enums, filters, types
 from anony import app, db, userbot
 
 
-@app.on_message(filters.command(["leaveall1", f"leaveall1@{app.username}"]) & SUDOERS)
-async def leave_all(client, message):
-    if message.from_user.id not in SUDOERS:
-        return
-
-    left = 0
-    failed = 0
-    lol = await message.reply("🔄 ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs !")
+@app.on_message(filters.command(["leaveall"]) & filters.user(app.owner))
+async def _leaveall(_, m: types.Message):
+    if len(m.command) < 2:
+        return await m.reply_text("Which assistant?")
+    
     try:
-        userbot = await get_client(1)
-        async for dialog in userbot.get_dialogs():
-            if dialog.chat.id == JAI:
-                continue
-            if await is_active_chat(dialog.chat.id):
-                continue
-            try:
-                await userbot.leave_chat(dialog.chat.id)
-                left += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ɢʀᴏᴜᴘ...\n\nʟᴇғᴛ: {left} ᴄʜᴀᴛs.\nғᴀɪʟᴇᴅ: {failed} ᴄʜᴀᴛs."
-                )
-            except BaseException:
-                failed += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ...\n\nʟᴇғᴛ: {left} chats.\nғᴀɪʟᴇᴅ: {failed} chats."
-                )
+        num = int(m.command[1])
+    except ValueError:
+        return await m.reply_text("Invalid number")
+
+    left, failed = 0, 0
+    sent = await m.reply_text("Leaving all chats...")
+    asses = {
+        1: userbot.one,
+        2: userbot.two,
+        3: userbot.three,
+    }
+
+    async for dialog in asses[num].get_dialogs():
+        chat = dialog.chat
+        if chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+            continue
+        if chat.id in [app.logger, -1001686672798, -1001549206010]:
+            continue
+        if chat.id in db.active_calls:
+            continue
+
+        try:
+            await asses[num].leave_chat(chat.id)
             await asyncio.sleep(3)
-    finally:
-        await app.send_message(
-            message.chat.id,
-            f"✅ ʟᴇғᴛ ғʀᴏᴍ:* {left} chats.\n❌ ғᴀɪʟᴇᴅ ɪɴ:** {failed} chats.",
-        )
+            left += 1
+        except:
+            failed += 1
+            continue
 
-
-@app.on_message(filters.command(["leaveall2", f"leaveall2@{app.username}"]) & SUDOERS)
-async def leave_all(client, message):
-    if message.from_user.id not in SUDOERS:
-        return
-
-    left = 0
-    failed = 0
-    lol = await message.reply("🔄 ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs !")
-    try:
-        userbot = await get_client(2)
-        async for dialog in userbot.get_dialogs():
-            if dialog.chat.id == JAI:
-                continue
-            if await is_active_chat(dialog.chat.id):
-                continue
-            try:
-                await userbot.leave_chat(dialog.chat.id)
-                left += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ɢʀᴏᴜᴘ...\n\nʟᴇғᴛ: {left} ᴄʜᴀᴛs.\nғᴀɪʟᴇᴅ: {failed} ᴄʜᴀᴛs."
-                )
-            except BaseException:
-                failed += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ...\n\nʟᴇғᴛ: {left} chats.\nғᴀɪʟᴇᴅ: {failed} chats."
-                )
-            await asyncio.sleep(3)
-    finally:
-        await app.send_message(
-            message.chat.id,
-            f"✅ ʟᴇғᴛ ғʀᴏᴍ:* {left} chats.\n❌ ғᴀɪʟᴇᴅ ɪɴ:** {failed} chats.",
-        )
-
-@app.on_message(filters.command(["leaveall3", f"leaveall3@{app.username}"]) & SUDOERS)
-async def leave_all(client, message):
-    if message.from_user.id not in SUDOERS:
-        return
-
-    left = 0
-    failed = 0
-    lol = await message.reply("🔄 ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs !")
-    try:
-        userbot = await get_client(3)
-        async for dialog in userbot.get_dialogs():
-            if dialog.chat.id == JAI:
-                continue
-            if await is_active_chat(dialog.chat.id):
-                continue
-            try:
-                await userbot.leave_chat(dialog.chat.id)
-                left += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ɢʀᴏᴜᴘ...\n\nʟᴇғᴛ: {left} ᴄʜᴀᴛs.\nғᴀɪʟᴇᴅ: {failed} ᴄʜᴀᴛs."
-                )
-            except BaseException:
-                failed += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ...\n\nʟᴇғᴛ: {left} chats.\nғᴀɪʟᴇᴅ: {failed} chats."
-                )
-            await asyncio.sleep(3)
-    finally:
-        await app.send_message(
-            message.chat.id,
-            f"✅ ʟᴇғᴛ ғʀᴏᴍ:* {left} chats.\n❌ ғᴀɪʟᴇᴅ ɪɴ:** {failed} chats.",
-        )
-
-
-@app.on_message(filters.command(["leaveall4", f"leaveall4@{app.username}"]) & SUDOERS)
-async def leave_all(client, message):
-    if message.from_user.id not in SUDOERS:
-        return
-
-    left = 0
-    failed = 0
-    lol = await message.reply("🔄 ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs !")
-    try:
-        userbot = await get_client(4)
-        async for dialog in userbot.get_dialogs():
-            if dialog.chat.id == JAI:
-                continue
-            if await is_active_chat(dialog.chat.id):
-                continue
-            try:
-                await userbot.leave_chat(dialog.chat.id)
-                left += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ɢʀᴏᴜᴘ...\n\nʟᴇғᴛ: {left} ᴄʜᴀᴛs.\nғᴀɪʟᴇᴅ: {failed} ᴄʜᴀᴛs."
-                )
-            except BaseException:
-                failed += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ...\n\nʟᴇғᴛ: {left} chats.\nғᴀɪʟᴇᴅ: {failed} chats."
-                )
-            await asyncio.sleep(3)
-    finally:
-        await app.send_message(
-            message.chat.id,
-            f"✅ ʟᴇғᴛ ғʀᴏᴍ:* {left} chats.\n❌ ғᴀɪʟᴇᴅ ɪɴ:** {failed} chats.",
-        )
-
-
-@app.on_message(filters.command(["leaveall5", f"leaveall5@{app.username}"]) & SUDOERS)
-async def leave_all(client, message):
-    if message.from_user.id not in SUDOERS:
-        return
-
-    left = 0
-    failed = 0
-    lol = await message.reply("🔄 ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ᴄʜᴀᴛs !")
-    try:
-        userbot = await get_client(5)
-        async for dialog in userbot.get_dialogs():
-            if dialog.chat.id == JAI:
-                continue
-            if await is_active_chat(dialog.chat.id):
-                continue
-            try:
-                await userbot.leave_chat(dialog.chat.id)
-                left += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ ᴀʟʟ ɢʀᴏᴜᴘ...\n\nʟᴇғᴛ: {left} ᴄʜᴀᴛs.\nғᴀɪʟᴇᴅ: {failed} ᴄʜᴀᴛs."
-                )
-            except BaseException:
-                failed += 1
-                await lol.edit(
-                    f"ᴜsᴇʀʙᴏᴛ ʟᴇᴀᴠɪɴɢ...\n\nʟᴇғᴛ: {left} chats.\nғᴀɪʟᴇᴅ: {failed} chats."
-                )
-            await asyncio.sleep(3)
-    finally:
-        await app.send_message(
-            message.chat.id,
-            f"✅ ʟᴇғᴛ ғʀᴏᴍ:* {left} chats.\n❌ ғᴀɪʟᴇᴅ ɪɴ:** {failed} chats.",
-        )
+    await sent.edit_text(f"Left {left} chats.\nFailed to leave {failed} chats.")
