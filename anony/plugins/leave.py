@@ -27,7 +27,7 @@ async def _leaveall(_, m: types.Message):
         3: userbot.three,
     }
 
-    for dialog in await asses[num].get_dialogs():
+    async for dialog in asses[num].get_dialogs():
         chat = dialog.chat
         if chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
             continue
