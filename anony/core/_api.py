@@ -11,7 +11,7 @@ class FallenApi:
         self.vapi_url = "https://api.video.thequickearn.xyz"
         self.api_key = config.API_KEY
         self.retries = retries
-        self.session = aiohttp.ClientSession()
+        self.session: aiohttp.ClientSession = None
         self.timeout = aiohttp.ClientTimeout(total=timeout)
         self.download_dir = "downloads"
 
