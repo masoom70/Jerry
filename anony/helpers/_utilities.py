@@ -103,7 +103,20 @@ class Utilities:
         )
         await app.send_message(chat_id=app.logger, text=_text)
 
-    async def send_log(self, m: types.Message, chat: bool = False) -> None:
+    async def send_log(self, m: types.Message, chat: bool = False, left: bool = False) -> None:
+        if left:
+            user = m.from_user
+            txt = "<u><b>Kicked from chat</b></u>\n\n<b>Chat:</b> <code>{0}</code> | {1}\n<b>User:</b> <code>{2}</code> | {3}"
+            return await app.send_message(
+                chat_id=app.logger,
+                text=txt.format(
+                    m.chat.id,
+                    m.chat.title,
+                    user.id if user else 0,
+                    user.mention if user else "Anonymous",
+                ),
+            )
+
         if chat:
             user = m.from_user
             return await app.send_message(

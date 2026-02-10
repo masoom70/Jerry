@@ -83,3 +83,15 @@ async def _new_member(_, message: types.Message):
                 return
             await utils.send_log(message, True)
             await db.add_chat(message.chat.id)
+
+
+@app.on_message(filters.left_chat_member, group=9)
+@lang.language()
+async def _left_member(_, message: types.Message):
+    if message.chat.type != enums.ChatType.SUPERGROUP:
+        return
+    await asyncio.sleep(3)
+
+    if message.left_chat_member.id == app.id:
+        await utils.send_log(message, left=True)
+        await db.rm_chat(message.chat.id)

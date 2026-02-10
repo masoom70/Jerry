@@ -11,17 +11,11 @@ from pyrogram import errors, filters, types
 from anony import app, db, lang
 
 
-broadcasting = False
-
 @app.on_message(filters.command(["broadcast"]) & app.sudoers)
 @lang.language()
 async def _broadcast(_, message: types.Message):
-    global broadcasting
     if not message.reply_to_message:
         return await message.reply_text(message.lang["gcast_usage"])
-
-    if broadcasting:
-        return await message.reply_text(message.lang["gcast_active"])
 
     msg = message.reply_to_message
     count, ucount = 0, 0
@@ -32,26 +26,10 @@ async def _broadcast(_, message: types.Message):
         groups.extend(await db.get_chats())
     if "-user" in message.command:
         users.extend(await db.get_users())
-
-    broadcasting = True
-
-    await msg.forward(app.logger)
-    await (await app.send_message(
-        chat_id=app.logger, 
-        text=message.lang["gcast_log"].format(
-            message.from_user.id,
-            message.from_user.mention,
-            message.text,
-        )
-    )).pin(disable_notification=False)
     await asyncio.sleep(5)
 
     failed = ""
     for chat in groups:
-        if not broadcasting:
-            await sent.edit_text(message.lang["gcast_stopped"].format(count, ucount))
-            break
-
         try:
             (
                 await msg.copy(chat, reply_markup=msg.reply_markup)
@@ -68,10 +46,6 @@ async def _broadcast(_, message: types.Message):
     await message.reply_text(f"Broadcated to {count} chats.")
 
     for chat in users:
-        if not broadcasting:
-            await sent.edit_text(message.lang["gcast_stopped"].format(count, ucount))
-            break
-
         try:
             (
                 await msg.copy(chat, reply_markup=msg.reply_markup)
@@ -95,25 +69,6 @@ async def _broadcast(_, message: types.Message):
             caption=text,
         )
         os.remove("errors.txt")
-    broadcasting = False
     try: await sent.delete()
     except: pass
     await message.reply_text(text)
-
-
-@app.on_message(filters.command(["stop_gcast", "stop_broadcast"]) & app.sudoers)
-@lang.language()
-async def _stop_gcast(_, message: types.Message):
-    global broadcasting
-    if not broadcasting:
-        return await message.reply_text(message.lang["gcast_inactive"])
-
-    broadcasting = False
-    await (await app.send_message(
-        chat_id=app.logger,
-        text=message.lang["gcast_stop_log"].format(
-            message.from_user.id,
-            message.from_user.mention
-        )
-    )).pin(disable_notification=False)
-    await message.reply_text(message.lang["gcast_stop"])
