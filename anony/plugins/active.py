@@ -39,3 +39,17 @@ async def _activevc(_, m: types.Message):
         )
     )
     os.remove("activevc.txt")
+
+
+@app.on_message(filters.command(["autoleave"]) & app.sudoers)
+async def _autoleave(_, m: types.Message):
+    if len(m.command) < 2:
+        return await m.reply_text("What?")
+    
+    mode = m.command[1]
+    if mode not in ("enable", "disable"):
+        return await m.reply_text("What?\n\nOnly <code>on</code> and <code>off</code> is accepted.")
+
+    status = mode == "enable"
+    await db.set_auto_leave(status)
+    await m.reply_text(f"Auto leave status updated.\n\n<b>Auto Leave:</b> <code>{status}</code>")
