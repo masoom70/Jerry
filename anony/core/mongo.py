@@ -27,6 +27,7 @@ class MongoDB:
         self.notified = []
         self.cache = self.db.cache
         self.logger = False
+        self.leaving = False
 
         self.assistant = {}
         self.assistantdb = self.db.assistant
@@ -83,6 +84,21 @@ class MongoDB:
         if chat_id not in self.admin_list or reload:
             self.admin_list[chat_id] = await reload_admins(chat_id)
         return self.admin_list[chat_id]
+
+    # AUTO LEAVE METHODS
+    async def auto_leave(self, check: bool = False) -> bool:
+        if check:
+            if doc := await self.cache.find_one({"_id": "auto_leave"}):
+                self.leaving = doc.get("status", False)
+        return self.leaving
+    
+    async def set_auto_leave(self, status: bool) -> None:
+        self.leaving = status
+        await self.cache.update_one(
+            {"_id": "auto_leave"},
+            {"$set": {"status": status}},
+            upsert=True,
+        )
 
     # AUTH METHODS
     async def _get_auth(self, chat_id: int) -> set[int]:
@@ -345,6 +361,7 @@ class MongoDB:
 
         await self.get_chats()
         await self.get_users()
+        await self.auto_leave(True)
         await self.get_blacklisted(True)
         await self.get_logger()
         logger.info("Database cache loaded.")
