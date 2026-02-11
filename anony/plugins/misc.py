@@ -21,23 +21,26 @@ async def _watcher_vc(_, m: types.Message):
 async def auto_leave():
     while True:
         await asyncio.sleep(1800)
+        if not await db.auto_leave():
+            continue
         for ub in userbot.clients:
             left = 0
             try:
-                for dialog in await ub.get_dialogs():
+                async for dialog in ub.get_dialogs():
                     chat_id = dialog.chat.id
                     if left >= 20:
                         break
-                    if chat_id in [app.logger, -1001686672798, -1001549206010]:
-                        continue
-                    if dialog.chat.type in [
+                    if dialog.chat.type not in [
                         enums.ChatType.GROUP,
                         enums.ChatType.SUPERGROUP,
                     ]:
-                        if chat_id in db.active_calls:
-                            continue
-                        await ub.leave_chat(chat_id)
-                        left += 1
+                        continue
+                    if chat_id in [app.logger, -1001686672798, -1001549206010]:
+                        continue
+                    if chat_id in db.active_calls:
+                        continue
+                    await ub.leave_chat(chat_id)
+                    left += 1
                     await asyncio.sleep(5)
             except:
                 continue
