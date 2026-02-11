@@ -150,7 +150,13 @@ class MongoDB:
     async def get_client(self, chat_id: int):
         if chat_id not in self.assistant:
             await self.get_assistant(chat_id)
-        return {1: userbot.one, 2: userbot.two, 3: userbot.three}.get(
+        return {
+            1: userbot.one,
+            2: userbot.two,
+            3: userbot.three,
+            4: userbot.four,
+            5: userbot.five,
+        }.get(
             self.assistant[chat_id]
         )
 
