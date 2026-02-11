@@ -21,6 +21,8 @@ class Config:
         self.SESSION1 = getenv("SESSION", None)
         self.SESSION2 = getenv("SESSION2", None)
         self.SESSION3 = getenv("SESSION3", None)
+        self.SESSION4 = getenv("SESSION4", None)
+        self.SESSION5 = getenv("SESSION5", None)
 
         self.SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/RessoUpdates")
         self.SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/DOCTOR_CHATTING_GROUP")
