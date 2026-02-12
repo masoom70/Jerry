@@ -50,7 +50,7 @@ Built with Python, Pyrogram, and Py-TgCalls, it’s optimized for reliability an
     </summary>
 
 ```bash
-git clone https://github.com/AnonymousX1025/AnonXMusic && cd AnonXMusic
+git clone https://github.com/masoom70/Resso-1 && cd Resso-1
 
 # Install dependencies
 pip3 install -U -r requirements.txt
@@ -156,3 +156,4 @@ This project is licensed under the <b>MIT License</b> — see <a href="https://g
 ⭐ Enjoying the tunes? <b>Star the repo</b> — feedback keeps the rhythm going!
 
 </div>
+
