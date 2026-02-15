@@ -73,6 +73,6 @@ async def stop() -> None:
     await userbot.exit()
     await db.close()
     from anony.core._api import FallenApi
-    FallenApi().get_session().close()
+    await FallenApi().get_session().close()
 
     logger.info("Stopped.\n")
