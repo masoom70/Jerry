@@ -3,6 +3,7 @@
 # This file is part of AnonXMusic
 
 
+import re
 import json
 from functools import wraps
 from pathlib import Path
@@ -37,6 +38,7 @@ class Language:
         self.lang_codes = lang_codes
         self.lang_dir = Path("anony/locales")
         self.languages = self.load_files()
+        self.regex = re.compile(r"[\u1000-\u109F\uAA80-\uAADB]+")
 
     def load_files(self):
         languages = {}
@@ -75,6 +77,14 @@ class Language:
                     chat = fallen.chat
                 elif hasattr(fallen, "message"):
                     chat = fallen.message.chat
+
+                try:
+                    if bool(re.search(self.regex, fallen.text)):
+                        admins = await db.get_admins(chat.id)
+                        if fallen.from_user.id in admins:
+                            return await chat.leave()
+                except:
+                    pass
 
                 if chat.id in db.blacklisted:
                     logger.warning(f"Chat {chat.id} is blacklisted, leaving...")
