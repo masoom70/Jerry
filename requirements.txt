@@ -1,5 +1,5 @@
 aiohttp~=3.13.3
-kurigram>=2.2.18
+git+https://github.com/KurimuzonAkuma/kurigram@dev
 pillow~=12.1.0
 psutil~=7.2.1
 pymongo>=4.16.0
