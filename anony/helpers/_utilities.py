@@ -53,7 +53,10 @@ class Utilities:
                     link = entity.url
                     break
                 elif entity.type == enums.MessageEntityType.URL:
-                    link = message.text[entity.offset: entity.offset + entity.length]
+                    text = message.text or message.caption
+                    if not text:
+                        continue
+                    link = text[entity.offset: entity.offset + entity.length]
                     break
 
         if link:
@@ -76,7 +79,7 @@ class Utilities:
                     return await app.get_users(m.group(0))
                 if m := re.search(r"\b\d{6,15}\b", msg.text):
                     return await app.get_users(int(m.group(0)))
-            except:
+            except Exception:
                 pass
 
         return None
@@ -103,20 +106,7 @@ class Utilities:
         )
         await app.send_message(chat_id=app.logger, text=_text)
 
-    async def send_log(self, m: types.Message, chat: bool = False, left: bool = False) -> None:
-        if left:
-            user = m.from_user
-            txt = "<u><b>Kicked from chat</b></u>\n\n<b>Chat:</b> <code>{0}</code> | {1}\n<b>User:</b> <code>{2}</code> | {3}"
-            return await app.send_message(
-                chat_id=app.logger,
-                text=txt.format(
-                    m.chat.id,
-                    m.chat.title,
-                    user.id if user else 0,
-                    user.mention if user else "Anonymous",
-                ),
-            )
-
+    async def send_log(self, m: types.Message, chat: bool = False) -> None:
         if chat:
             user = m.from_user
             return await app.send_message(
