@@ -4,7 +4,7 @@
 
 
 from ntgcalls import (ConnectionNotFound, TelegramServerError,
-                      RTMPStreamingUnsupported)
+                      RTMPStreamingUnsupported, ConnectionError)
 from pyrogram.errors import (ChatSendMediaForbidden, ChatSendPhotosForbidden,
                              MessageIdInvalid)
 from pyrogram.types import InputMediaPhoto, Message
@@ -36,7 +36,7 @@ class TgCall(PyTgCalls):
 
         try:
             await client.leave_call(chat_id, close=False)
-        except:
+        except Exception:
             pass
 
 
@@ -122,7 +122,7 @@ class TgCall(PyTgCalls):
         except exceptions.NoAudioSourceFound:
             await message.edit_text(_lang["error_no_audio"])
             await self.play_next(chat_id)
-        except (ConnectionNotFound, TelegramServerError):
+        except (ConnectionError, ConnectionNotFound, TelegramServerError):
             await self.stop(chat_id)
             await message.edit_text(_lang["error_tg_server"])
         except RTMPStreamingUnsupported:
@@ -150,7 +150,7 @@ class TgCall(PyTgCalls):
                     revoke=True,
                 )
                 media.message_id = 0
-        except:
+        except Exception:
             pass
 
         if not media:
