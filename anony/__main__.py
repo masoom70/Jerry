@@ -26,9 +26,6 @@ async def main():
     if config.COOKIES_URL:
         await yt.save_cookies(config.COOKIES_URL)
 
-    from anony.core._api import FallenApi
-    FallenApi().get_session()
-
     sudoers = await db.get_sudoers()
     app.sudoers.update(sudoers)
     app.bl_users.update(await db.get_blacklisted())
