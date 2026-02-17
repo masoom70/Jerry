@@ -112,7 +112,11 @@ class FallenApi:
         logger.warning("[FAILED] CDN download attempts exhausted.")
         return None
 
-    async def download_track(self, url: str) -> str | None:
+    async def download_track(self, video_id: str, url: str) -> str | None:
+        for file in os.scandir(self.download_dir):
+            if file.is_file() and video_id in file.name:
+                return str(file.path)
+
         if self.session is None or self.session.closed:
             raise RuntimeError("Session not initialized. Call start() before downloading.")
 
