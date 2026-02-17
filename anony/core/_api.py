@@ -140,10 +140,3 @@ class FallenApi:
                 return None
 
         return await self.download_cdn(dl_url)
-
-    async def __aenter__(self):
-        await self.start()
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.close()
