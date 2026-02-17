@@ -31,6 +31,9 @@ async def main():
     app.bl_users.update(await db.get_blacklisted())
     logger.info(f"Loaded {len(app.sudoers)} sudo users.")
 
+    from anony.core._api import FallenApi
+    FallenApi().start()
+
     await idle()
     await stop()
 
