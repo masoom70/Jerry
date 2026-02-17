@@ -8,7 +8,8 @@ import time
 
 from pyrogram import enums, errors, filters, types
 
-from anony import anon, app, config, db, lang, queue, tasks, userbot, yt
+from anony import (anon, app, config, db, lang,
+                   logger, queue, tasks, userbot, yt)
 from anony.helpers import buttons
 
 
@@ -23,26 +24,23 @@ async def auto_leave():
         await asyncio.sleep(1800)
         if not await db.auto_leave():
             continue
-        for ub in userbot.clients:
+        logger.info("Running auto-leave task...")
+        for ub in enumerate(userbot.clients):
             left = 0
             try:
-                async for dialog in ub.get_dialogs():
-                    chat_id = dialog.chat.id
+                chats = [dialog.chat.id async for dialog in ub.get_dialogs()
+                         if dialog.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]][25:]
+                for chat in chats:
                     if left >= 20:
                         break
-                    if dialog.chat.type not in [
-                        enums.ChatType.GROUP,
-                        enums.ChatType.SUPERGROUP,
-                    ]:
+                    if chat in db.active_calls:
                         continue
-                    if chat_id in [app.logger, -1001686672798, -1001549206010]:
+                    if chat in [app.logger, -1001686672798, -1001549206010]:
                         continue
-                    if chat_id in db.active_calls:
-                        continue
-                    await ub.leave_chat(chat_id)
+                    await ub.leave_chat(chat)
                     left += 1
                     await asyncio.sleep(5)
-            except:
+            except Exception:
                 continue
 
 
