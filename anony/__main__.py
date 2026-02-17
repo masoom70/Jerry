@@ -32,7 +32,7 @@ async def main():
     logger.info(f"Loaded {len(app.sudoers)} sudo users.")
 
     from anony.core._api import FallenApi
-    FallenApi().start()
+    await FallenApi().start()
 
     await idle()
     await stop()
