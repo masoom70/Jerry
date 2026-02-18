@@ -71,7 +71,7 @@ class FallenApi:
         logger.warning("[FAILED] All retry attempts exhausted.")
         return None
 
-    async def download_cdn(self, cdn_url: str) -> str | None:
+    async def download_cdn(self, video_id: str, cdn_url: str) -> str | None:
         for attempt in range(1, self.retries + 1):
             try:
                 async with aiohttp.ClientSession(timeout=self.timeout) as session:
@@ -100,15 +100,15 @@ class FallenApi:
                         return str(save_path)
 
             except aiohttp.ClientError as e:
-                logger.warning(f"[NETWORK ERROR] Attempt {attempt}/{self.retries} failed: {e}")
+                pass
             except asyncio.TimeoutError:
-                logger.warning(f"[TIMEOUT] Attempt {attempt}/{self.retries} exceeded timeout.")
+                pass
             except Exception as e:
-                logger.warning(f"[UNEXPECTED ERROR] {e}")
+                logger.warning(f"[{video_id}]: {e}")
 
             await asyncio.sleep(4)
 
-        logger.warning("[FAILED] CDN download attempts exhausted.")
+        logger.warning(f"[{video_id}]: Download failed.")
         return None
 
     async def download_track(self, video_id: str, url: str) -> str | None:
@@ -129,10 +129,10 @@ class FallenApi:
                 return file_path
             except errors.FloodWait as e:
                 logger.warning(f"[FLOODWAIT] Sleeping {e.value}s before retry.")
-                await asyncio.sleep(e.value)
+                await asyncio.sleep(e.value + 60)
                 return await self.download_track(url)
             except Exception as e:
                 logger.warning(f"[TG DOWNLOAD ERROR] {e}")
                 return None
 
-        return await self.download_cdn(dl_url)
+        return await self.download_cdn(video_id, dl_url)
