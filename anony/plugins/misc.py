@@ -25,7 +25,7 @@ async def auto_leave():
         if not await db.auto_leave():
             continue
         logger.info("Running auto-leave task...")
-        for ub in enumerate(userbot.clients):
+        for ub in userbot.clients:
             left = 0
             try:
                 chats = [dialog.chat.id async for dialog in ub.get_dialogs()
