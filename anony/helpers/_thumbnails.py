@@ -22,7 +22,8 @@ class Thumbnail:
     async def save_thumb(self, output_path: str, url: str) -> str:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
-                open(output_path, "wb").write(await resp.read())
+                with open(output_path, "wb") as f:
+                  f.write(await resp.read())
             return output_path
 
     def clear(self, text):
@@ -92,7 +93,7 @@ class Thumbnail:
 
             draw = ImageDraw.Draw(bg)
             draw.text(
-                (835, 315), "Jerry Bots", fill=(192, 192, 192), font=self.nfont
+                (835, 315), "Resso Updates", fill=(192, 192, 192), font=self.nfont
             )
             draw.text(
                 (835, 355),
