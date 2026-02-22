@@ -29,7 +29,7 @@ async def auto_leave():
             left = 0
             try:
                 chats = [dialog.chat.id async for dialog in ub.get_dialogs()
-                         if dialog.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]][25:]
+                         if dialog.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]][-25:]
                 for chat in chats:
                     if left >= 20:
                         break
