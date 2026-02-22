@@ -27,7 +27,7 @@ async def _stats(_, m: types.Message):
     _utext = m.lang["stats_user"].format(
         app.name,
         len(userbot.clients),
-        config.AUTO_LEAVE,
+        await db.auto_leave(),
         len(db.blacklisted),
         len(app.bl_users),
         len(app.sudoers),
