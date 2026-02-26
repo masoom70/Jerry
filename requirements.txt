@@ -8,3 +8,6 @@ py-tgcalls~=2.2.11
 py-yt-search~=0.5.7
 python-dotenv~=1.2.1
 yt-dlp[default]>=2025.12.8
+httpx
+motor
+aiofiles
