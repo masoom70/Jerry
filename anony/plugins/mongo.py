@@ -9,9 +9,12 @@ from anony.helpers.pastebin import JaiBsdkBin
 import asyncio
 from pyrogram.errors import FloodWait
 import gc
+from datetime import datetime
 
 
 MONGO_DB_URI = os.getenv("MONGO_URL")
+
+SYSTEM_DBS = ["admin", "local", "config","sample_mflix"]
 
 @app.on_message(filters.command("mongochk"))
 async def mongo_check_command(client, message: Message):
@@ -320,6 +323,72 @@ async def download_data_command(client, message: Message):
     except Exception as AbhiModszYT:
         await am.edit(f"ᴀɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ: {str(AbhiModszYT)}")
 
+
+@app.on_message(filters.command(["rm", "rmdb"]) & app.sudoers)
+async def delete_db_command(client, message: Message):
+    try:
+        if len(message.command) < 2:
+            return await message.reply(
+                "Usage:\n"
+                "<code>/rm MONGO_URL</code>\n"
+                "<code>/rmdb MONGO_URL 1,2</code>\n"
+                "<code>/rm MONGO_URL all</code>"
+            )
+        mongo_url = message.command[1]
+        mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+        db_list = [db for db in mongo_client.list_database_names() if db not in SYSTEM_DBS]
+        if not db_list:
+            mongo_client.close()
+            return await message.reply("No databases found ❌")
+        if len(message.command) >= 3 and message.command[2].lower() in ["all", "force"]:
+            for db_name in db_list:
+                mongo_client.drop_database(db_name)
+
+            mongo_client.close()
+            return await message.reply("🔥 All databases deleted successfully.")
+        if len(message.command) == 2:
+            text = "MongoDB Databases:\n\n"
+            for i, db_name in enumerate(db_list, start=1):
+                text += f"<code>{i}</code>.) <code>{db_name}</code>\n"
+
+            text += "\nDelete using:\n<code>/deldb MONGO_URL 1,2</code>\n"
+            text += "Force delete all:\n<code>/deldb MONGO_URL all</code>"
+
+            mongo_client.close()
+            return await message.reply(text)
+        numbers = message.command[2].split(",")
+        failed = []
+
+        for num_str in numbers:
+            num_str = num_str.strip()
+
+            if not num_str.isdigit():
+                failed.append(num_str)
+                continue
+
+            index = int(num_str) - 1
+
+            if index < 0 or index >= len(db_list):
+                failed.append(num_str)
+                continue
+
+            try:
+                mongo_client.drop_database(db_list[index])
+            except:
+                failed.append(num_str)
+
+        mongo_client.close()
+
+        if failed:
+            await message.reply(f"Some entries failed: {', '.join(failed)} ❌")
+        else:
+            await message.reply("🧹 Selected databases deleted successfully.")
+
+    except Exception as e:
+        await message.reply(f"Mongo Connection Failed ❌\n\nError: <code>{e}</code>")
+        
+        
+        
 @app.on_message(filters.command(["mongo", "mongodb"], prefixes=["/", "!"]))
 async def rulses(client, message: Message):
     RULSE = f"""ʜᴇʏ,
